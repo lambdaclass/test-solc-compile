@@ -1,0 +1,34 @@
+name: Test Solidity Compiler Compilation
+
+on:
+  push:
+    branches:
+      - test-solc-compile
+  pull_request:
+    branches:
+      - test-solc-compile
+
+jobs:
+  compile-solc:
+    name: Compile Solidity Compiler on ARM
+    runs-on: ubuntu-22.04-arm
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Compile solc from source (Linux ARM)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git build-essential cmake clang ninja-build ccache python3 z3 libz3-dev libboost-all-dev
+          git clone --depth 1 --branch v0.8.29 https://github.com/ethereum/solidity.git solidity
+          cd solidity
+          sed -i "s/j2/j$(nproc)/g" scripts/build.sh
+          ./scripts/build.sh
+          mkdir -p ~/.cache/solc/v0.8.29/
+          cp /usr/local/bin/solc ~/.cache/solc/v0.8.29/solc
+      
+      - name: Verify solc installation
+        run: |
+          ~/.cache/solc/v0.8.29/solc --version
+          echo "Solidity compiler successfully compiled and cached"
