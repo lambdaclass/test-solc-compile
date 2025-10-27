@@ -38,5 +38,5 @@ jobs:
       
       - name: Verify solc installation
         run: |
-          ~/.cache/solc/v0.8.29/solc --version
-          echo "Solidity compiler successfully compiled and cached"
+          sudo install -m 0755 ~/.cache/solc/v0.8.29/solc /usr/local/bin/solc
+          solc --version
